@@ -3,7 +3,7 @@
     <div class="container">
       <div class="left">
         <div class="col-1">
-          <router-link class="header" :to="{ name: 'Home' }">TeachAR</router-link>
+          <router-link class="header" :to="{ name: 'Home' }">FireBlogs</router-link>
           <ul>
             <li>
               <a href="#"><youTube class="svg-icon"/></a>
@@ -22,9 +22,9 @@
         <div class="col-2">
           <ul>
             <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
-            <router-link class="link" :to="{ name: 'Lessons' }">Lessons</router-link>
-            <router-link class="link" :to="{ name: 'CreateLesson' }">Create Lesson</router-link>
-            <router-link class="link" :to="{ name: 'Login' }">Login In / Register</router-link>
+            <router-link class="link" :to="{ name: 'Blogs' }">Blogs</router-link>
+            <router-link v-if="admin" class="link" :to="{ name: 'CreatePost' }">Create Post</router-link>
+            <router-link v-if="!user" class="link" :to="{ name: 'Login' }">Login In / Register</router-link>
           </ul>
         </div>
       </div>
@@ -72,10 +72,12 @@ footer {
       flex-direction: row;
       gap: 0px;
     }
+
     > div {
       display: flex;
       flex: 1;
     }
+
     .left {
       gap: 32px;
       color: #fff;
@@ -87,6 +89,7 @@ footer {
         align-items: initial;
         gap: 0;
       }
+
       .header {
         text-align: center;
         font-size: 24px;
@@ -103,6 +106,7 @@ footer {
         list-style: none;
         display: flex;
       }
+
       .col-1,
       .col-2 {
         gap: 32px;
@@ -112,8 +116,10 @@ footer {
           gap: 0;
         }
       }
+
       .col-1 {
         flex-direction: column;
+
         h2 {
           text-align: center;
           @media (min-width: 800px) {
@@ -122,6 +128,7 @@ footer {
         }
         ul {
           margin-top: auto;
+
           li {
             display: flex;
             align-items: center;
@@ -133,6 +140,7 @@ footer {
           }
         }
       }
+
       .col-2 {
         ul {
           height: 100%;
@@ -151,6 +159,7 @@ footer {
         }
       }
     }
+
     .right {
       gap: 32px;
       color: #fff;
@@ -161,6 +170,7 @@ footer {
         gap: 0;
       }
     }
+
     p {
       margin-top: auto;
     }

@@ -1,56 +1,51 @@
 <template>
   <div class="home">
-    <LessonPost :post="welcomeScreen" />
-    <LessonPost :post="post" v-for="(post, index) in sampleLesson" :key="index" />
+    <BlogPost v-if="!user" :post="welcomeScreen" />
+    <BlogPost :post="post" v-for="(post, index) in blogPostsFeed" :key="index" />
     <div class="blog-card-wrap">
       <div class="container">
-        <h3>View More Recent Lessons</h3>
+        <h3>View More Recent Blogs</h3>
         <div class="blog-cards">
-          <LessonCard :post="post" v-for="(post, index) in lessonPostsCards" :key="index" />
+          <BlogCard :post="post" v-for="(post, index) in blogPostsCards" :key="index" />
         </div>
       </div>
     </div>
-    <div class="updates">
+    <div v-if="!user" class="updates">
       <div class="container">
-        <h2>Never miss a Lesson. Register to start Learning!</h2>
-        <router-link class="router-button" to="#"> Register Now! <Arrow class="arrow arrow-light" /> </router-link>
+        <h2>never miss a post. Register for your free account today!</h2>
+        <router-link class="router-button" to="#"> Register for FireBlogs <Arrow class="arrow arrow-light" /> </router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import BlogPost from "../components/BlogPost";
+import BlogCard from "../components/BlogCard";
 import Arrow from "../assets/Icons/arrow-right-light.svg";
-import LessonCard from "../components/LessonCard.vue";
-import LessonPost from "../components/LessonPost.vue";
 export default {
   name: "Home",
-  components: { LessonPost, LessonCard, Arrow },
+  components: { BlogPost, BlogCard, Arrow },
   data() {
     return {
       welcomeScreen: {
         title: "Welcome!",
-        lessonPost: "Weekly blog articles with all things programming including HTML, CSS, JavaScript and more. Register today to never miss a post!",
+        blogPost:
+          "Weekly blog articles with all things programming including HTML, CSS, JavaScript and more. Register today to never miss a post!",
         welcomeScreen: true,
         photo: "coding",
       },
-      sampleLesson: [
-        {
-          title: "lorem ipsum",
-          lessonHTML: "hero",
-          lessonCoverPhoto: "beautiful-stories",
-        },
-        {
-          title: "lorem ipsum2",
-          lessonHTML: "heroalomff",
-          lessonCoverPhoto: "designed-for-everyone",
-        },
-      ],
     };
   },
   computed: {
-    lessonPostsCards() {
-      return this.$store.state.lessonPostsCards;
+    blogPostsFeed() {
+      return this.$store.getters.blogPostsFeed;
+    },
+    blogPostsCards() {
+      return this.$store.getters.blogPostsCards;
+    },
+    user() {
+      return this.$store.state.user;
     },
   },
 };
@@ -64,6 +59,7 @@ export default {
     margin-bottom: 32px;
   }
 }
+
 .updates {
   .container {
     padding: 100px 25px;
@@ -74,6 +70,7 @@ export default {
       padding: 125px 25px;
       flex-direction: row;
     }
+
     .router-button {
       display: flex;
       font-size: 14px;
@@ -82,6 +79,7 @@ export default {
         margin-left: auto;
       }
     }
+
     h2 {
       font-weight: 300;
       font-size: 32px;
