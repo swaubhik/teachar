@@ -21,8 +21,9 @@
         <vue-editor :editorOptions="editorSettings" v-model="blogHTML" useCustomImageHandler @image-added="imageHandler" />
       </div>
       <div class="blog-actions">
-        <button @click="uploadBlog">Publish Blog</button>
-        <router-link class="router-button" :to="{ name: 'BlogPreview' }">Post Preview</router-link>
+        <button>Upload 3d Models</button>
+        <button @click="uploadBlog">Publish Lesson</button>
+        <router-link class="router-button" :to="{ name: 'BlogPreview' }">Lesson Preview</router-link>
       </div>
     </div>
   </div>

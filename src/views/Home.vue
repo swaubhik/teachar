@@ -12,8 +12,8 @@
     </div>
     <div v-if="!user" class="updates">
       <div class="container">
-        <h2>never miss a post. Register for your free account today!</h2>
-        <router-link class="router-button" to="#"> Register for FireBlogs <Arrow class="arrow arrow-light" /> </router-link>
+        <h2>never miss an AR lesson. Register for your free account today!</h2>
+        <router-link class="router-button" to="Register"> Register for TeachAR <Arrow class="arrow arrow-light" /> </router-link>
       </div>
     </div>
   </div>
@@ -30,9 +30,9 @@ export default {
     return {
       welcomeScreen: {
         title: "Welcome!",
-        blogPost: "Weekly blog articles with all things programming including HTML, CSS, JavaScript and more. Register today to never miss a post!",
+        blogPost: "Learn with all things explained with Augmented Reality, Images and more. Register today to never miss a lesson!!",
         welcomeScreen: true,
-        photo: "coding",
+        photo: "ar",
       },
     };
   },
