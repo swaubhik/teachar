@@ -10,7 +10,7 @@ export default new Vuex.Store({
   state: {
     blogPosts: [],
     postLoaded: null,
-    blogHTML: "Write your blog title here...",
+    blogHTML: "Write your Lesson title here...",
     blogTitle: "",
     blogPhotoName: "",
     blogPhotoFileURL: null,
@@ -77,8 +77,7 @@ export default new Vuex.Store({
       console.log(state.profileId);
     },
     setProfileInitials(state) {
-      state.profileInitials =
-        state.profileFirstName.match(/(\b\S)?/g).join("") + state.profileLastName.match(/(\b\S)?/g).join("");
+      state.profileInitials = state.profileFirstName.match(/(\b\S)?/g).join("") + state.profileLastName.match(/(\b\S)?/g).join("");
     },
     changeFirstName(state, payload) {
       state.profileFirstName = payload;

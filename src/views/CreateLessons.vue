@@ -7,7 +7,7 @@
         <p><span>Error:</span>{{ this.errorMsg }}</p>
       </div>
       <div class="blog-info">
-        <input type="text" placeholder="Enter Blog Title" v-model="blogTitle" />
+        <input type="text" placeholder="Enter Lessons Title" v-model="blogTitle" />
         <div class="upload-file">
           <label for="blog-photo">Upload Cover Photo</label>
           <input type="file" ref="blogPhoto" id="blog-photo" @change="fileChange" accept=".png, .jpg, ,jpeg" />
@@ -39,7 +39,7 @@ window.Quill = Quill;
 const ImageResize = require("quill-image-resize-module").default;
 Quill.register("modules/imageResize", ImageResize);
 export default {
-  name: "CreatePost",
+  name: "CreateLessons",
   data() {
     return {
       file: null,
@@ -132,7 +132,7 @@ export default {
         return;
       }
       this.error = true;
-      this.errorMsg = "Please ensure Blog Title & Blog Post has been filled!";
+      this.errorMsg = "Please ensure Lesson Title & Lesson Post has been filled!";
       setTimeout(() => {
         this.error = false;
       }, 5000);

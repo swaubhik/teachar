@@ -1,13 +1,11 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-import Blogs from "../views/Blogs.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import ForgotPassword from "../views/ForgotPassword.vue";
 import Profile from "../views/Profile.vue";
 import Admin from "../views/Admin.vue";
-import CreatePost from "../views/CreatePost.vue";
 import BlogPreview from "../views/BlogPreview.vue";
 import ViewBlog from "../views/ViewBlog.vue";
 import EditBlog from "../views/EditBlog.vue";
@@ -27,11 +25,14 @@ const routes = [
     },
   },
   {
-    path: "/blogs",
-    name: "Blogs",
-    component: Blogs,
+    path: "/Lessons",
+    name: "Lessons",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ "../views/Lessons.vue"),
     meta: {
-      title: "Blogs",
+      title: "Lessons",
       requiresAuth: false,
     },
   },
@@ -82,9 +83,9 @@ const routes = [
     },
   },
   {
-    path: "/create-post",
-    name: "CreatePost",
-    component: CreatePost,
+    path: "/create-lessons",
+    name: "CreateLessons",
+    component: () => import(/* webpackChunkName: "about" */ "../views/CreateLessons.vue"),
     meta: {
       title: "Create Post",
       requiresAuth: true,
