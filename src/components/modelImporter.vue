@@ -2,8 +2,16 @@
   <div class="modal">
     <div class="modal-content">
       <p>{{ this.modelMessage }}</p>
-      <button @click="uploadgltf">Upload GLTF file</button>
-      <button @click="uploadusdz">Upload USDZ file</button>
+      <div class="gltf">
+        <label for="gltf-file">Upload .gltf</label>
+        <input type="file" ref="gltf" id="gltf-file" @change="glbfilechange" accept=".glb, .gltf" />
+        <span>File Chosen: {{ this.$store.state.gltf }}</span>
+      </div>
+      <div class="usdz">
+        <label for="usdz-file">Upload .usdz</label>
+        <input type="file" ref="usdz" id="usdz-file" @change="usdzfilechange" accept=" .usdz" />
+        <span>File Chosen: {{ this.$store.state.usdz }}</span>
+      </div>
       <button @click="closeModel">Close</button>
     </div>
   </div>
@@ -12,9 +20,27 @@
 <script>
 export default {
   props: ["modelMessage"],
+  data() {
+    return {
+      glbfile: null,
+      usdzfile: null,
+    };
+  },
   methods: {
     closeModel() {
       this.$emit("close-model");
+    },
+    glbfilechange() {
+      this.glbfile = this.$refs.gltf.files[0];
+      const glbName = this.glbfile.name;
+      this.$store.commit("glbChange", glbName);
+      this.$store.commit("createGlbURL", URL.createObjectURL(this.glbfile));
+    },
+    usdzfilechange() {
+      this.usdzfile = this.$refs.usdz.files[0];
+      const usdzName = this.usdzfile.name;
+      this.$store.commit("usdzChange", usdzName);
+      this.$store.commit("createUsdzURL", URL.createObjectURL(this.usdzfile));
     },
   },
 };
@@ -33,6 +59,19 @@ export default {
   background-color: rgba(0, 0, 0, 0.7);
 
   .modal-content {
+    .gltf {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .usdz {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    input {
+      display: none;
+    }
     display: flex;
     flex-direction: column;
     justify-content: space-between;

@@ -8,6 +8,10 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    gltf: null,
+    gltfURL: null,
+    usdz: null,
+    usdzURL: null,
     blogPosts: [],
     postLoaded: null,
     blogHTML: "Write your Lesson title here...",
@@ -34,6 +38,18 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    glbChange(state, payload) {
+      state.gltf = payload;
+    },
+    createGlbURL(state, payload) {
+      state.gltfURL = payload;
+    },
+    usdzChange(state,payload){
+      state.usdz = payload;
+    },
+    createUsdzURL(state, payload){
+      state.usdzURL = payload;
+    },
     newBlogPost(state, payload) {
       state.blogHTML = payload;
     },
