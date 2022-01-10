@@ -1,5 +1,6 @@
 <template>
   <div class="create-post">
+    <ModelImporter v-if="modelActive" :modelMessage="modelmessage" v-on:close-model="closeModel" />
     <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview" />
     <Loading v-show="loading" />
     <div class="container">
@@ -11,17 +12,15 @@
         <div class="upload-file">
           <label for="blog-photo">Upload Cover Photo</label>
           <input type="file" ref="blogPhoto" id="blog-photo" @change="fileChange" accept=".png, .jpg, ,jpeg" />
-          <button @click="openPreview" class="preview" :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL }">
-            Preview Photo
-          </button>
+          <button @click="openPreview" class="preview" :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL }">Preview Photo</button>
           <span>File Chosen: {{ this.$store.state.blogPhotoName }}</span>
         </div>
       </div>
       <div class="editor">
         <vue-editor :editorOptions="editorSettings" v-model="blogHTML" useCustomImageHandler @image-added="imageHandler" />
       </div>
+      <button class="upload" @click.prevent="enableModel">Upload 3D Models</button>
       <div class="blog-actions">
-        <button>Upload 3d Models</button>
         <button @click="uploadBlog">Publish Lesson</button>
         <router-link class="router-button" :to="{ name: 'BlogPreview' }">Lesson Preview</router-link>
       </div>
@@ -36,6 +35,7 @@ import firebase from "firebase/app";
 import "firebase/storage";
 import db from "../firebase/firebaseInit";
 import Quill from "quill";
+import ModelImporter from "../components/modelImporter.vue";
 window.Quill = Quill;
 const ImageResize = require("quill-image-resize-module").default;
 Quill.register("modules/imageResize", ImageResize);
@@ -43,6 +43,8 @@ export default {
   name: "CreateLessons",
   data() {
     return {
+      modelActive: null,
+      modelmessage: "Upload your 3d models in .gltf & .usdz file formats",
       file: null,
       error: null,
       errorMsg: null,
@@ -57,6 +59,7 @@ export default {
   components: {
     BlogCoverPreview,
     Loading,
+    ModelImporter,
   },
   methods: {
     fileChange() {
@@ -64,6 +67,12 @@ export default {
       const fileName = this.file.name;
       this.$store.commit("fileNameChange", fileName);
       this.$store.commit("createFileURL", URL.createObjectURL(this.file));
+    },
+    enableModel() {
+      this.modelActive = true;
+    },
+    closeModel() {
+      this.modelActive = !this.modelActive;
     },
 
     openPreview() {
@@ -166,21 +175,20 @@ export default {
   },
 };
 </script>
-
 <style lang="scss">
 .create-post {
   position: relative;
   height: 100%;
-
   button {
     margin-top: 0;
   }
-
+  .upload {
+    margin-top: 32px;
+  }
   .router-button {
     text-decoration: none;
     color: #fff;
   }
-
   label,
   button,
   .router-button {
@@ -193,23 +201,19 @@ export default {
     color: #fff;
     background-color: #303030;
     text-decoration: none;
-
     &:hover {
       background-color: rgba(48, 48, 48, 0.7);
     }
   }
-
   .container {
     position: relative;
     height: 100%;
     padding: 10px 25px 60px;
   }
-
   // error styling
   .invisible {
     opacity: 0 !important;
   }
-
   .err-message {
     width: 100%;
     padding: 12px;
@@ -219,51 +223,41 @@ export default {
     background-color: #303030;
     opacity: 1;
     transition: 0.5s ease all;
-
     p {
       font-size: 14px;
     }
-
     span {
       font-weight: 600;
     }
   }
-
   .blog-info {
     display: flex;
     margin-bottom: 32px;
-
     input:nth-child(1) {
       min-width: 300px;
     }
-
     input {
       transition: 0.5s ease-in-out all;
       padding: 10px 4px;
       border: none;
       border-bottom: 1px solid #303030;
-
       &:focus {
         outline: none;
         box-shadow: 0 1px 0 0 #303030;
       }
     }
-
     .upload-file {
       flex: 1;
       margin-left: 16px;
       position: relative;
       display: flex;
-
       input {
         display: none;
       }
-
       .preview {
         margin-left: 16px;
         text-transform: initial;
       }
-
       span {
         font-size: 12px;
         margin-left: 16px;
@@ -271,34 +265,28 @@ export default {
       }
     }
   }
-
   .editor {
     height: 60vh;
     display: flex;
     flex-direction: column;
-
     .quillWrapper {
       position: relative;
       display: flex;
       flex-direction: column;
       height: 100%;
     }
-
     .ql-container {
       display: flex;
       flex-direction: column;
       height: 100%;
       overflow: scroll;
     }
-
     .ql-editor {
       padding: 20px 16px 30px;
     }
   }
-
   .blog-actions {
     margin-top: 32px;
-
     button {
       margin-right: 16px;
     }

@@ -93,6 +93,11 @@ const routes = [
     },
   },
   {
+    path: "/3d",
+    name: "3d",
+    component: () => import(/* webpackChunkName: "about" */ "../components/modelImporter.vue"),
+  },
+  {
     path: "/post-preview",
     name: "BlogPreview",
     component: BlogPreview,
