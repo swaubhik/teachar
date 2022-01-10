@@ -14,7 +14,7 @@ export default new Vuex.Store({
     usdzURL: null,
     blogPosts: [],
     postLoaded: null,
-    blogHTML: "Write your Lesson title here...",
+    blogHTML: "",
     blogTitle: "",
     blogPhotoName: "",
     blogPhotoFileURL: null,
@@ -38,16 +38,16 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-    glbChange(state, payload) {
+    gltfChange(state, payload) {
       state.gltf = payload;
     },
-    createGlbURL(state, payload) {
+    creategltfURL(state, payload) {
       state.gltfURL = payload;
     },
-    usdzChange(state,payload){
+    usdzChange(state, payload) {
       state.usdz = payload;
     },
-    createUsdzURL(state, payload){
+    createUsdzURL(state, payload) {
       state.usdzURL = payload;
     },
     newBlogPost(state, payload) {
@@ -73,6 +73,8 @@ export default new Vuex.Store({
       state.blogHTML = payload.blogHTML;
       state.blogPhotoFileURL = payload.blogCoverPhoto;
       state.blogPhotoName = payload.blogCoverPhotoName;
+      state.lessongltf = payload.gltfURL;
+      state.lessonusdz = payload.usdzURL;
     },
     filterBlogPost(state, payload) {
       state.blogPosts = state.blogPosts.filter((post) => post.blogID !== payload);
@@ -127,6 +129,8 @@ export default new Vuex.Store({
             blogTitle: doc.data().blogTitle,
             blogDate: doc.data().date,
             blogCoverPhotoName: doc.data().blogCoverPhotoName,
+            lessongltf: doc.data().lessongltf,
+            lessonusdz: doc.data().lessonusdz,
           };
           state.blogPosts.push(data);
         }

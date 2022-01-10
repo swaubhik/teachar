@@ -87,15 +87,10 @@ const routes = [
     name: "CreateLessons",
     component: () => import(/* webpackChunkName: "about" */ "../views/CreateLessons.vue"),
     meta: {
-      title: "Create Post",
+      title: "Create Lessons",
       requiresAuth: true,
       requiresAdmin: true,
     },
-  },
-  {
-    path: "/3d",
-    name: "3d",
-    component: () => import(/* webpackChunkName: "about" */ "../components/modelImporter.vue"),
   },
   {
     path: "/post-preview",

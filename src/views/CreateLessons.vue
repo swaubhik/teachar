@@ -1,6 +1,5 @@
 <template>
   <div class="create-post">
-    <ModelImporter v-if="modelActive" :modelMessage="modelmessage" v-on:close-model="closeModel" />
     <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview" />
     <Loading v-show="loading" />
     <div class="container">
@@ -17,9 +16,27 @@
         </div>
       </div>
       <div class="editor">
-        <vue-editor :editorOptions="editorSettings" v-model="blogHTML" useCustomImageHandler @image-added="imageHandler" />
+        <vue-editor
+          :editorOptions="editorSettings"
+          placeholder="Write your Lesson content here..."
+          v-model="blogHTML"
+          useCustomImageHandler
+          @image-added="imageHandler"
+        />
       </div>
-      <button class="upload" @click.prevent="enableModel">Upload 3D Models</button>
+
+      <div class="model">
+        <div class="gltf">
+          <label for="gltf-file">Upload .gltf</label>
+          <input type="file" ref="gltf" id="gltf-file" @change="gltffilechange" accept=".glb, .gltf" />
+          <span>File Chosen: {{ this.$store.state.gltf }}</span>
+        </div>
+        <div class="usdz">
+          <label for="usdz-file">Upload .usdz</label>
+          <input type="file" ref="usdz" id="usdz-file" @change="usdzfilechange" accept=" .usdz" />
+          <span>File Chosen: {{ this.$store.state.usdz }}</span>
+        </div>
+      </div>
       <div class="blog-actions">
         <button @click="uploadBlog">Publish Lesson</button>
         <router-link class="router-button" :to="{ name: 'BlogPreview' }">Lesson Preview</router-link>
@@ -35,7 +52,6 @@ import firebase from "firebase/app";
 import "firebase/storage";
 import db from "../firebase/firebaseInit";
 import Quill from "quill";
-import ModelImporter from "../components/modelImporter.vue";
 window.Quill = Quill;
 const ImageResize = require("quill-image-resize-module").default;
 Quill.register("modules/imageResize", ImageResize);
@@ -43,9 +59,9 @@ export default {
   name: "CreateLessons",
   data() {
     return {
-      modelActive: null,
-      modelmessage: "Upload your 3d models in .gltf & .usdz file formats",
       file: null,
+      gltffile: null,
+      usdzfile: null,
       error: null,
       errorMsg: null,
       loading: null,
@@ -59,7 +75,6 @@ export default {
   components: {
     BlogCoverPreview,
     Loading,
-    ModelImporter,
   },
   methods: {
     fileChange() {
@@ -68,11 +83,17 @@ export default {
       this.$store.commit("fileNameChange", fileName);
       this.$store.commit("createFileURL", URL.createObjectURL(this.file));
     },
-    enableModel() {
-      this.modelActive = true;
+    gltffilechange() {
+      this.gltffile = this.$refs.gltf.files[0];
+      const gltfName = this.gltffile.name;
+      this.$store.commit("gltfChange", gltfName);
+      this.$store.commit("creategltfURL", URL.createObjectURL(this.gltffile));
     },
-    closeModel() {
-      this.modelActive = !this.modelActive;
+    usdzfilechange() {
+      this.usdzfile = this.$refs.usdz.files[0];
+      const usdzName = this.usdzfile.name;
+      this.$store.commit("usdzChange", usdzName);
+      this.$store.commit("createUsdzURL", URL.createObjectURL(this.usdzfile));
     },
 
     openPreview() {
@@ -101,42 +122,78 @@ export default {
     uploadBlog() {
       if (this.blogTitle.length !== 0 && this.blogHTML.length !== 0) {
         if (this.file) {
-          this.loading = true;
-          const storageRef = firebase.storage().ref();
-          const docRef = storageRef.child(`documents/BlogCoverPhotos/${this.$store.state.blogPhotoName}`);
-          docRef.put(this.file).on(
-            "state_changed",
-            (snapshot) => {
-              console.log(snapshot);
-            },
-            (err) => {
-              console.log(err);
-              this.loading = false;
-            },
-            async () => {
-              const downloadURL = await docRef.getDownloadURL();
-              const timestamp = await Date.now();
-              const dataBase = await db.collection("blogPosts").doc();
+          if (this.gltffile && this.usdzfile) {
+            this.loading = true;
+            const storageRef = firebase.storage().ref();
+            const docRef = storageRef.child(`documents/BlogCoverPhotos/${this.$store.state.blogPhotoName}`);
+            const gltfRef = storageRef.child(`documents/LessonGLTFfiles/${this.$store.state.gltf}`);
+            const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdz}`);
+            gltfRef.put(this.gltffile).on(
+              "state_changed",
+              (snapshot) => {
+                console.log(snapshot);
+              },
+              (err) => {
+                console.log(err);
+                this.loading = false;
+              }
+            );
+            usdzRef.put(this.usdzfile).on(
+              "state_changed",
+              (snapshot) => {
+                console.log(snapshot);
+              },
+              (err) => {
+                console.log(err);
+                this.loading = true;
+              }
+            );
+            docRef.put(this.file).on(
+              "state_changed",
+              (snapshot) => {
+                console.log(snapshot);
+              },
+              (err) => {
+                console.log(err);
+                this.loading = false;
+              },
 
-              await dataBase.set({
-                blogID: dataBase.id,
-                blogHTML: this.blogHTML,
-                blogCoverPhoto: downloadURL,
-                blogCoverPhotoName: this.blogCoverPhotoName,
-                blogTitle: this.blogTitle,
-                profileId: this.profileId,
-                date: timestamp,
-              });
-              await this.$store.dispatch("getPost");
-              this.loading = false;
-              this.$router.push({ name: "ViewBlog", params: { blogid: dataBase.id } });
-            }
-          );
-          return;
+              async () => {
+                const gltfdownloadURL = await gltfRef.getDownloadURL();
+                const usdzdownloadURL = await usdzRef.getDownloadURL();
+                const downloadURL = await docRef.getDownloadURL();
+                const timestamp = await Date.now();
+                const dataBase = await db.collection("blogPosts").doc();
+
+                await dataBase.set({
+                  blogID: dataBase.id,
+                  blogHTML: this.blogHTML,
+                  blogCoverPhoto: downloadURL,
+                  lessongltf: gltfdownloadURL,
+                  lessonusdz: usdzdownloadURL,
+                  blogCoverPhotoName: this.blogCoverPhotoName,
+                  blogTitle: this.blogTitle,
+                  profileId: this.profileId,
+                  date: timestamp,
+                });
+                await this.$store.dispatch("getPost");
+                this.loading = false;
+                this.$router.push({ name: "ViewBlog", params: { blogid: dataBase.id } });
+              }
+            );
+            return;
+          } else {
+            this.error = true;
+            this.errorMsg = "Please ensure you uploaded a 3D model in both formats!";
+            this.$store.state.setTimeout(() => {
+              this.error = false;
+            }, 5000);
+            return;
+          }
         }
         this.error = true;
         this.errorMsg = "Please ensure you uploaded a cover photo!";
-        setTimeout(() => {
+        this.$store.state.setTimeout(() => {
           this.error = false;
         }, 5000);
         return;
@@ -206,6 +263,31 @@ export default {
     }
   }
   .container {
+    .model {
+      padding: 32px 0 0 0;
+      .gltf {
+        display: flex;
+        align-items: center;
+        span {
+          font-size: 12px;
+          margin-left: 16px;
+          align-self: center;
+        }
+      }
+      input {
+        display: none;
+      }
+      .usdz {
+        margin: 32px 0 0 0;
+        display: flex;
+        align-items: center;
+        span {
+          font-size: 12px;
+          margin-left: 16px;
+          align-self: center;
+        }
+      }
+    }
     position: relative;
     height: 100%;
     padding: 10px 25px 60px;

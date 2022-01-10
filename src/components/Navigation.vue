@@ -49,7 +49,7 @@
       <ul class="mobile-nav" v-show="mobileNav">
         <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
         <router-link class="link" :to="{ name: 'Lessons' }">Lessons</router-link>
-        <router-link v-if="admin" class="link" :to="{ name: 'CreatePost' }">Create Post</router-link>
+        <router-link v-if="admin" class="link" :to="{ name: 'CreateLessons' }">Create Lesson</router-link>
         <router-link v-if="!user" class="link" :to="{ name: 'Login' }">Login/Register</router-link>
       </ul>
     </transition>
