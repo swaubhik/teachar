@@ -8,14 +8,14 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    gltf: null,
-    gltfURL: null,
-    usdz: null,
-    usdzURL: null,
     blogPosts: [],
     postLoaded: null,
     blogHTML: "",
     blogTitle: "",
+    gltfName: "",
+    gltfFileURL: null,
+    usdzName: "",
+    usdzFileURL: null,
     blogPhotoName: "",
     blogPhotoFileURL: null,
     blogPhotoPreview: null,
@@ -38,23 +38,23 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-    gltfChange(state, payload) {
-      state.gltf = payload;
-    },
-    creategltfURL(state, payload) {
-      state.gltfURL = payload;
-    },
-    usdzChange(state, payload) {
-      state.usdz = payload;
-    },
-    createUsdzURL(state, payload) {
-      state.usdzURL = payload;
-    },
     newBlogPost(state, payload) {
       state.blogHTML = payload;
     },
     updateBlogTitle(state, payload) {
       state.blogTitle = payload;
+    },
+    gltfNameChange(state, payload) {
+      state.gltfName = payload;
+    },
+    creategltfModelFileURL(state, payload) {
+      state.gltfFileURL = payload;
+    },
+    usdzNameChange(state, payload) {
+      state.usdzName = payload;
+    },
+    createUsdzModelFileURL(state, payload) {
+      state.usdzFileURL = payload;
     },
     fileNameChange(state, payload) {
       state.blogPhotoName = payload;
@@ -73,8 +73,10 @@ export default new Vuex.Store({
       state.blogHTML = payload.blogHTML;
       state.blogPhotoFileURL = payload.blogCoverPhoto;
       state.blogPhotoName = payload.blogCoverPhotoName;
-      state.lessongltf = payload.gltfURL;
-      state.lessonusdz = payload.usdzURL;
+      state.gltfFileURL = payload.gltfFile;
+      state.gltfName = payload.gltfFileName;
+      state.usdzFileURL = payload.usdzFile;
+      state.usdzName = payload.usdzFileName;
     },
     filterBlogPost(state, payload) {
       state.blogPosts = state.blogPosts.filter((post) => post.blogID !== payload);
@@ -129,8 +131,10 @@ export default new Vuex.Store({
             blogTitle: doc.data().blogTitle,
             blogDate: doc.data().date,
             blogCoverPhotoName: doc.data().blogCoverPhotoName,
-            lessongltf: doc.data().lessongltf,
-            lessonusdz: doc.data().lessonusdz,
+            gltfFile: doc.data().gltfFile,
+            gltfFileName: doc.data().gltfFileName,
+            usdzFile: doc.data().usdzFile,
+            usdzFileName: doc.data().usdzFileName,
           };
           state.blogPosts.push(data);
         }

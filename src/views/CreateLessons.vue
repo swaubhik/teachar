@@ -28,13 +28,13 @@
       <div class="model">
         <div class="gltf">
           <label for="gltf-file">Upload .gltf</label>
-          <input type="file" ref="gltf" id="gltf-file" @change="gltffilechange" accept=".glb, .gltf" />
-          <span>File Chosen: {{ this.$store.state.gltf }}</span>
+          <input type="file" ref="gltf" id="gltf-file" @change="gltffileChange" accept=".glb, .gltf" />
+          <span>File Chosen: {{ this.$store.state.gltfName }}</span>
         </div>
         <div class="usdz">
           <label for="usdz-file">Upload .usdz</label>
-          <input type="file" ref="usdz" id="usdz-file" @change="usdzfilechange" accept=" .usdz" />
-          <span>File Chosen: {{ this.$store.state.usdz }}</span>
+          <input type="file" ref="usdz" id="usdz-file" @change="usdzfileChange" accept=" .usdz" />
+          <span>File Chosen: {{ this.$store.state.usdzName }}</span>
         </div>
       </div>
       <div class="blog-actions">
@@ -83,17 +83,17 @@ export default {
       this.$store.commit("fileNameChange", fileName);
       this.$store.commit("createFileURL", URL.createObjectURL(this.file));
     },
-    gltffilechange() {
+    gltffileChange() {
       this.gltffile = this.$refs.gltf.files[0];
       const gltfName = this.gltffile.name;
-      this.$store.commit("gltfChange", gltfName);
-      this.$store.commit("creategltfURL", URL.createObjectURL(this.gltffile));
+      this.$store.commit("gltfNameChange", gltfName);
+      this.$store.commit("creategltfModelFileURL", URL.createObjectURL(this.gltffile));
     },
-    usdzfilechange() {
+    usdzfileChange() {
       this.usdzfile = this.$refs.usdz.files[0];
       const usdzName = this.usdzfile.name;
-      this.$store.commit("usdzChange", usdzName);
-      this.$store.commit("createUsdzURL", URL.createObjectURL(this.usdzfile));
+      this.$store.commit("usdzNameChange", usdzName);
+      this.$store.commit("createUsdzModelFileURL", URL.createObjectURL(this.usdzfile));
     },
 
     openPreview() {
@@ -126,28 +126,28 @@ export default {
             this.loading = true;
             const storageRef = firebase.storage().ref();
             const docRef = storageRef.child(`documents/BlogCoverPhotos/${this.$store.state.blogPhotoName}`);
-            const gltfRef = storageRef.child(`documents/LessonGLTFfiles/${this.$store.state.gltf}`);
-            const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdz}`);
-            gltfRef.put(this.gltffile).on(
-              "state_changed",
-              (snapshot) => {
-                console.log(snapshot);
-              },
-              (err) => {
-                console.log(err);
-                this.loading = false;
-              }
-            );
-            usdzRef.put(this.usdzfile).on(
-              "state_changed",
-              (snapshot) => {
-                console.log(snapshot);
-              },
-              (err) => {
-                console.log(err);
-                this.loading = true;
-              }
-            );
+            // const gltfRef = storageRef.child(`documents/LessonGLTFfiles/${this.$store.state.gltf}`);
+            // const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdz}`);
+            // gltfRef.put(this.gltffile).on(
+            //   "state_changed",
+            //   (snapshot) => {
+            //     console.log(snapshot);
+            //   },
+            //   (err) => {
+            //     console.log(err);
+            //     this.loading = false;
+            //   }
+            // );
+            // usdzRef.put(this.usdzfile).on(
+            //   "state_changed",
+            //   (snapshot) => {
+            //     console.log(snapshot);
+            //   },
+            //   (err) => {
+            //     console.log(err);
+            //     this.loading = true;
+            //   }
+            // );
             docRef.put(this.file).on(
               "state_changed",
               (snapshot) => {
@@ -159,26 +159,69 @@ export default {
               },
 
               async () => {
-                const gltfdownloadURL = await gltfRef.getDownloadURL();
-                const usdzdownloadURL = await usdzRef.getDownloadURL();
                 const downloadURL = await docRef.getDownloadURL();
                 const timestamp = await Date.now();
                 const dataBase = await db.collection("blogPosts").doc();
-
                 await dataBase.set({
                   blogID: dataBase.id,
                   blogHTML: this.blogHTML,
                   blogCoverPhoto: downloadURL,
-                  lessongltf: gltfdownloadURL,
-                  lessonusdz: usdzdownloadURL,
+                  gltfFile: "",
+                  usdzFile: "",
+                  gltfFileName: "",
+                  usdzFileName: "",
                   blogCoverPhotoName: this.blogCoverPhotoName,
                   blogTitle: this.blogTitle,
                   profileId: this.profileId,
                   date: timestamp,
                 });
+
+                console.log("Document written with ID: ", dataBase.id);
+                const id = dataBase.id
+                const gltfRef = storageRef.child(`documents/LessonGLTFfiles/${this.$store.state.gltfName}`);
+                gltfRef.put(this.gltffile).on(
+                  "state_changed",
+                  (snapshot) => {
+                    console.log(snapshot);
+                  },
+                  (err) => {
+                    console.log(err);
+                    this.loading = false;
+                  },
+                  async () => {
+                    const dataBase = await db.collection("blogPosts").doc(id);
+                    const gltfdownloadURL = await gltfRef.getDownloadURL();
+                    await dataBase.update({
+                      gltfFile: gltfdownloadURL,
+                      gltfFileName: this.gltfFileName,
+                    });
+                  }
+                );
+
                 await this.$store.dispatch("getPost");
                 this.loading = false;
                 this.$router.push({ name: "ViewBlog", params: { blogid: dataBase.id } });
+              }
+            );
+
+            const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdzName}`);
+
+            usdzRef.put(this.usdzfile).on(
+              "state_changed",
+              (snapshot) => {
+                console.log(snapshot);
+              },
+              (err) => {
+                console.log(err);
+                this.loading = true;
+              },
+              async () => {
+                const dataBase = await db.collection("blogPosts").doc();
+                const usdzdownloadURL = await usdzRef.getDownloadURL();
+                await dataBase.update({
+                  usdzFile: usdzdownloadURL,
+                  usdzFileName: this.usdzFileName,
+                });
               }
             );
             return;
@@ -213,6 +256,13 @@ export default {
     blogCoverPhotoName() {
       return this.$store.state.blogPhotoName;
     },
+    gltfFileName() {
+      return this.$store.state.gltfName;
+    },
+    usdzFileName() {
+      return this.$store.state.usdzName;
+    },
+
     blogTitle: {
       get() {
         return this.$store.state.blogTitle;
