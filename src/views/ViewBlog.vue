@@ -11,7 +11,7 @@
 <template>
   <div class="sample" v-if="currentBlog">
     <div class="demo" id="ar">
-      <model-viewer :src="this.currentBlog[0].gltfFile" camera-controls auto-rotate ar></model-viewer>
+      <model-viewer :src="this.currentBlog[0].gltfFile" autoplay camera-controls auto-rotate ar></model-viewer>
     </div>
     <div class="content">
       <div class="wrapper">

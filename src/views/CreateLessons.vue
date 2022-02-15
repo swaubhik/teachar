@@ -177,8 +177,9 @@ export default {
                 });
 
                 console.log("Document written with ID: ", dataBase.id);
-                const id = dataBase.id
+                const id = dataBase.id;
                 const gltfRef = storageRef.child(`documents/LessonGLTFfiles/${this.$store.state.gltfName}`);
+                const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdzName}`);
                 gltfRef.put(this.gltffile).on(
                   "state_changed",
                   (snapshot) => {
@@ -197,6 +198,24 @@ export default {
                     });
                   }
                 );
+                usdzRef.put(this.usdzfile).on(
+                  "state_changed",
+                  (snapshot) => {
+                    console.log(snapshot);
+                  },
+                  (err) => {
+                    console.log(err);
+                    this.loading = true;
+                  },
+                  async () => {
+                    const dataBase = await db.collection("blogPosts").doc(id);
+                    const usdzdownloadURL = await usdzRef.getDownloadURL();
+                    await dataBase.update({
+                      usdzFile: usdzdownloadURL,
+                      usdzFileName: this.usdzFileName,
+                    });
+                  }
+                );
 
                 await this.$store.dispatch("getPost");
                 this.loading = false;
@@ -204,26 +223,6 @@ export default {
               }
             );
 
-            const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdzName}`);
-
-            usdzRef.put(this.usdzfile).on(
-              "state_changed",
-              (snapshot) => {
-                console.log(snapshot);
-              },
-              (err) => {
-                console.log(err);
-                this.loading = true;
-              },
-              async () => {
-                const dataBase = await db.collection("blogPosts").doc();
-                const usdzdownloadURL = await usdzRef.getDownloadURL();
-                await dataBase.update({
-                  usdzFile: usdzdownloadURL,
-                  usdzFileName: this.usdzFileName,
-                });
-              }
-            );
             return;
           } else {
             this.error = true;
