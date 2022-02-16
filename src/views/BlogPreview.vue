@@ -8,13 +8,13 @@
   </div> -->
   <div class="sample">
     <div class="demo" id="ar">
-      <model-viewer src="https://rickydebojeet.github.io/progress/Assets/skeleton.glb" camera-controls auto-rotate ar> </model-viewer>
+      <model-viewer :src="gltfFile" :ios-src="usdzFile" autoplay camera-controls auto-rotate ar> </model-viewer>
     </div>
     <div class="content">
       <div class="wrapper">
         <div class="heading1">
           <h2 class="demo-title">{{ this.blogTitle }}</h2>
-          <!-- <img :src="blogCoverPhoto" :alt="blogTitle" /> -->
+          <img :src="blogCoverPhoto" :alt="blogTitle" />
           <div class="post-content ql-editor" v-html="blogHTML"></div>
         </div>
       </div>
@@ -34,6 +34,12 @@ export default {
     },
     blogCoverPhoto() {
       return this.$store.state.blogPhotoFileURL;
+    },
+    gltfFile() {
+      return this.$store.state.gltfFileURL;
+    },
+    usdzFile() {
+      return this.$store.state.usdzFileURL;
     },
   },
 };

@@ -120,38 +120,17 @@ export default {
     },
 
     uploadBlog() {
+      this.loading = true;
       if (this.blogTitle.length !== 0 && this.blogHTML.length !== 0) {
         if (this.file) {
           if (this.gltffile && this.usdzfile) {
-            this.loading = true;
             const storageRef = firebase.storage().ref();
             const docRef = storageRef.child(`documents/BlogCoverPhotos/${this.$store.state.blogPhotoName}`);
-            // const gltfRef = storageRef.child(`documents/LessonGLTFfiles/${this.$store.state.gltf}`);
-            // const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdz}`);
-            // gltfRef.put(this.gltffile).on(
-            //   "state_changed",
-            //   (snapshot) => {
-            //     console.log(snapshot);
-            //   },
-            //   (err) => {
-            //     console.log(err);
-            //     this.loading = false;
-            //   }
-            // );
-            // usdzRef.put(this.usdzfile).on(
-            //   "state_changed",
-            //   (snapshot) => {
-            //     console.log(snapshot);
-            //   },
-            //   (err) => {
-            //     console.log(err);
-            //     this.loading = true;
-            //   }
-            // );
             docRef.put(this.file).on(
               "state_changed",
               (snapshot) => {
-                console.log(snapshot);
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log("Upload is " + progress + "% done");
               },
               (err) => {
                 console.log(err);
@@ -160,8 +139,8 @@ export default {
 
               async () => {
                 const downloadURL = await docRef.getDownloadURL();
-                const timestamp = await Date.now();
-                const dataBase = await db.collection("blogPosts").doc();
+                const timestamp = Date.now();
+                const dataBase = db.collection("blogPosts").doc();
                 await dataBase.set({
                   blogID: dataBase.id,
                   blogHTML: this.blogHTML,
@@ -175,22 +154,24 @@ export default {
                   profileId: this.profileId,
                   date: timestamp,
                 });
-
                 console.log("Document written with ID: ", dataBase.id);
+                this.loading = true;
                 const id = dataBase.id;
+                // gltf file upload
                 const gltfRef = storageRef.child(`documents/LessonGLTFfiles/${this.$store.state.gltfName}`);
-                const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdzName}`);
                 gltfRef.put(this.gltffile).on(
                   "state_changed",
                   (snapshot) => {
-                    console.log(snapshot);
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log("Upload is " + progress + "% done");
+                    this.loading = true;
                   },
                   (err) => {
                     console.log(err);
                     this.loading = false;
                   },
                   async () => {
-                    const dataBase = await db.collection("blogPosts").doc(id);
+                    const dataBase = db.collection("blogPosts").doc(id);
                     const gltfdownloadURL = await gltfRef.getDownloadURL();
                     await dataBase.update({
                       gltfFile: gltfdownloadURL,
@@ -198,14 +179,17 @@ export default {
                     });
                   }
                 );
+                // USDZ file upload
+                const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdzName}`);
                 usdzRef.put(this.usdzfile).on(
                   "state_changed",
                   (snapshot) => {
-                    console.log(snapshot);
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log("Upload is " + progress + "% done usdz");
                   },
                   (err) => {
                     console.log(err);
-                    this.loading = true;
+                    this.loading = false;
                   },
                   async () => {
                     const dataBase = await db.collection("blogPosts").doc(id);
@@ -216,10 +200,8 @@ export default {
                     });
                   }
                 );
-
                 await this.$store.dispatch("getPost");
-                this.loading = false;
-                this.$router.push({ name: "ViewBlog", params: { blogid: dataBase.id } });
+                this.$router.push({ name: "ViewBlog", params: { blogid: id } });
               }
             );
 
@@ -245,6 +227,7 @@ export default {
       setTimeout(() => {
         this.error = false;
       }, 5000);
+
       return;
     },
   },
