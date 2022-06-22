@@ -31,11 +31,6 @@
           <input type="file" ref="gltf" id="gltf-file" @change="gltffileChange" accept=".glb, .gltf" />
           <span>File Chosen: {{ this.$store.state.gltfName }}</span>
         </div>
-        <div class="usdz">
-          <label for="usdz-file">Upload .usdz</label>
-          <input type="file" ref="usdz" id="usdz-file" @change="usdzfileChange" accept=" .usdz" />
-          <span>File Chosen: {{ this.$store.state.usdzName }}</span>
-        </div>
       </div>
       <div class="blog-actions">
         <button @click="uploadBlog">Publish Lesson</button>
@@ -61,7 +56,6 @@ export default {
     return {
       file: null,
       gltffile: null,
-      usdzfile: null,
       error: null,
       errorMsg: null,
       loading: null,
@@ -89,12 +83,6 @@ export default {
       this.$store.commit("gltfNameChange", gltfName);
       this.$store.commit("creategltfModelFileURL", URL.createObjectURL(this.gltffile));
     },
-    usdzfileChange() {
-      this.usdzfile = this.$refs.usdz.files[0];
-      const usdzName = this.usdzfile.name;
-      this.$store.commit("usdzNameChange", usdzName);
-      this.$store.commit("createUsdzModelFileURL", URL.createObjectURL(this.usdzfile));
-    },
 
     openPreview() {
       this.$store.commit("openPhotoPreview");
@@ -120,10 +108,11 @@ export default {
     },
 
     uploadBlog() {
+      var id;
       this.loading = true;
       if (this.blogTitle.length !== 0 && this.blogHTML.length !== 0) {
         if (this.file) {
-          if (this.gltffile && this.usdzfile) {
+          if (this.gltffile) {
             const storageRef = firebase.storage().ref();
             const docRef = storageRef.child(`documents/BlogCoverPhotos/${this.$store.state.blogPhotoName}`);
             docRef.put(this.file).on(
@@ -146,17 +135,15 @@ export default {
                   blogHTML: this.blogHTML,
                   blogCoverPhoto: downloadURL,
                   gltfFile: "",
-                  usdzFile: "",
                   gltfFileName: "",
-                  usdzFileName: "",
                   blogCoverPhotoName: this.blogCoverPhotoName,
                   blogTitle: this.blogTitle,
                   profileId: this.profileId,
                   date: timestamp,
                 });
                 console.log("Document written with ID: ", dataBase.id);
-                this.loading = true;
-                const id = dataBase.id;
+                // this.loading = false;
+                id = dataBase.id;
                 // gltf file upload
                 const gltfRef = storageRef.child(`documents/LessonGLTFfiles/${this.$store.state.gltfName}`);
                 gltfRef.put(this.gltffile).on(
@@ -165,6 +152,16 @@ export default {
                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     console.log("Upload is " + progress + "% done");
                     this.loading = true;
+                    setTimeout(() => {
+                      if (progress == 100) {
+                        this.loading = false;
+
+                        this.$router.push({ name: "ViewBlog", params: { blogid: id } });
+                        // this.$router.go(0);
+                        window.location.replace('view-blog/'+id);
+                        console.log(id);
+                      }
+                    }, 3000);
                   },
                   (err) => {
                     console.log(err);
@@ -179,36 +176,16 @@ export default {
                     });
                   }
                 );
-                // USDZ file upload
-                const usdzRef = storageRef.child(`documents/LessonUSDZfiles/${this.$store.state.usdzName}`);
-                usdzRef.put(this.usdzfile).on(
-                  "state_changed",
-                  (snapshot) => {
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log("Upload is " + progress + "% done usdz");
-                  },
-                  (err) => {
-                    console.log(err);
-                    this.loading = false;
-                  },
-                  async () => {
-                    const dataBase = await db.collection("blogPosts").doc(id);
-                    const usdzdownloadURL = await usdzRef.getDownloadURL();
-                    await dataBase.update({
-                      usdzFile: usdzdownloadURL,
-                      usdzFileName: this.usdzFileName,
-                    });
-                  }
-                );
-                await this.$store.dispatch("getPost");
-                this.$router.push({ name: "ViewBlog", params: { blogid: id } });
+                this.$store.dispatch("getPost");
+                // this.loading = false;
               }
+              // this.loading = false;
             );
 
             return;
           } else {
             this.error = true;
-            this.errorMsg = "Please ensure you uploaded a 3D model in both formats!";
+            this.errorMsg = "Please ensure you uploaded a 3D model in gltf formats!";
             this.$store.state.setTimeout(() => {
               this.error = false;
             }, 5000);
@@ -240,9 +217,6 @@ export default {
     },
     gltfFileName() {
       return this.$store.state.gltfName;
-    },
-    usdzFileName() {
-      return this.$store.state.usdzName;
     },
 
     blogTitle: {
