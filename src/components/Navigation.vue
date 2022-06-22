@@ -32,7 +32,7 @@
               <div v-if="admin" class="option">
                 <router-link class="option" :to="{ name: 'Admin' }">
                   <adminIcon class="icon" />
-                  <p>Admin</p>
+                  <p>Teacher</p>
                 </router-link>
               </div>
               <div @click="signOut" class="option">
