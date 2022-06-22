@@ -14,8 +14,6 @@ export default new Vuex.Store({
     blogTitle: "",
     gltfName: "",
     gltfFileURL: null,
-    usdzName: "",
-    usdzFileURL: null,
     blogPhotoName: "",
     blogPhotoFileURL: null,
     blogPhotoPreview: null,
@@ -50,12 +48,6 @@ export default new Vuex.Store({
     creategltfModelFileURL(state, payload) {
       state.gltfFileURL = payload;
     },
-    usdzNameChange(state, payload) {
-      state.usdzName = payload;
-    },
-    createUsdzModelFileURL(state, payload) {
-      state.usdzFileURL = payload;
-    },
     fileNameChange(state, payload) {
       state.blogPhotoName = payload;
     },
@@ -75,8 +67,6 @@ export default new Vuex.Store({
       state.blogPhotoName = payload.blogCoverPhotoName;
       state.gltfFileURL = payload.gltfFile;
       state.gltfName = payload.gltfFileName;
-      state.usdzFileURL = payload.usdzFile;
-      state.usdzName = payload.usdzFileName;
     },
     filterBlogPost(state, payload) {
       state.blogPosts = state.blogPosts.filter((post) => post.blogID !== payload);
@@ -133,8 +123,6 @@ export default new Vuex.Store({
             blogCoverPhotoName: doc.data().blogCoverPhotoName,
             gltfFile: doc.data().gltfFile,
             gltfFileName: doc.data().gltfFileName,
-            usdzFile: doc.data().usdzFile,
-            usdzFileName: doc.data().usdzFileName,
           };
           state.blogPosts.push(data);
         }
