@@ -2,6 +2,7 @@
   <div class="modal">
     <div class="modal-content">
       <p>{{ this.modalMessage }}</p>
+      <slot />
       <button @click="closeModal">Close</button>
     </div>
   </div>
