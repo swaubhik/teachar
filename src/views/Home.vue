@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <Modal v-if="modalActive" :modalMessage="modalMessage" v-on:close-modal="closeModal"><Instruction /></Modal>
     <BlogPost v-if="!user" :post="welcomeScreen" />
     <BlogPost :post="post" v-for="(post, index) in blogPostsFeed" :key="index" />
     <div class="blog-card-wrap">
@@ -23,11 +24,15 @@
 import BlogPost from "../components/BlogPost";
 import BlogCard from "../components/BlogCard";
 import Arrow from "../assets/Icons/arrow-right-light.svg";
+import Modal from "../components/Modal.vue";
+import Instruction from "../components/Instruction.vue";
 export default {
   name: "Home",
-  components: { BlogPost, BlogCard, Arrow },
+  components: { BlogPost, BlogCard, Arrow, Modal, Instruction },
   data() {
     return {
+      modalActive: true,
+      modalMessage: "Hello",
       welcomeScreen: {
         title: "Welcome!",
         blogPost: "Learn with all things explained with Augmented Reality, Images and more. Register today to never miss a lesson!!",
@@ -45,6 +50,11 @@ export default {
     },
     user() {
       return this.$store.state.user;
+    },
+  },
+  methods: {
+    closeModal() {
+      this.modalActive = false;
     },
   },
 };
