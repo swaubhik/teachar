@@ -1,6 +1,8 @@
 <template>
   <div class="home">
-    <Modal v-if="modalActive" :modalMessage="modalMessage" v-on:close-modal="closeModal"><Instruction /></Modal>
+    <div v-if="!user">
+      <Modal v-if="modalActive" :modalMessage="modalMessage" v-on:close-modal="closeModal"><Instruction /></Modal>
+    </div>
     <BlogPost v-if="!user" :post="welcomeScreen" />
     <BlogPost :post="post" v-for="(post, index) in blogPostsFeed" :key="index" />
     <div class="blog-card-wrap">
@@ -32,7 +34,7 @@ export default {
   data() {
     return {
       modalActive: true,
-      modalMessage: "Hello",
+      modalMessage: "Instruction to use TeachAR",
       welcomeScreen: {
         title: "Welcome!",
         blogPost: "Learn with all things explained with Augmented Reality, Images and more. Register today to never miss a lesson!!",
