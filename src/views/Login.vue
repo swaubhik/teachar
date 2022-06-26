@@ -1,5 +1,6 @@
 <template>
   <div class="form-wrap">
+    <router-link class="router-link" :to="{ name: 'Home' }">Back 🏠</router-link>
     <form class="login">
       <p class="login-register">
         Don't have an account?
@@ -17,9 +18,7 @@
         </div>
         <div v-show="error" class="error">{{ this.errorMsg }}</div>
       </div>
-      <router-link class="forgot-password" :to="{ name: 'ForgotPassword' }"
-        >Forgot your password?</router-link
-      >
+      <router-link class="forgot-password" :to="{ name: 'ForgotPassword' }">Forgot your password?</router-link>
       <button @click.prevent="signIn">Sign In</button>
       <div class="angle"></div>
     </form>
