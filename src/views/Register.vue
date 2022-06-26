@@ -1,5 +1,7 @@
 <template>
   <div class="form-wrap">
+    <router-link class="router-link" :to="{ name: 'Login' }">Back</router-link>
+
     <form class="register">
       <p class="login-register">
         Already have an account?
@@ -63,13 +65,7 @@ export default {
   },
   methods: {
     async register() {
-      if (
-        this.email !== "" &&
-        this.password !== "" &&
-        this.firstName !== "" &&
-        this.lastName !== "" &&
-        this.username !== ""
-      ) {
+      if (this.email !== "" && this.password !== "" && this.firstName !== "" && this.lastName !== "" && this.username !== "") {
         this.error = false;
         this.errorMsg = "";
         const firebaseAuth = await firebase.auth();
