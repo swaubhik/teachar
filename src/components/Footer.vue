@@ -1,47 +1,62 @@
 <template>
-  <footer>
-    <div class="container">
-      <div class="left">
-        <div class="col-1">
-          <router-link class="header" :to="{ name: 'Home' }">TeachAR</router-link>
-          <ul>
-            <li>
-              <a target="_blank" href="https://cit.ac.in"><college class="svg-icon" /></a>
-            </li>
-            <li>
-              <a target="_blank" href="https://github.com/swaubhik"><codebrand class="svg-icon" /></a>
-            </li>
-            <li>
-              <a target="_blank" href="https://github.com/rickydebojeet"><arcamera class="svg-icon" /></a>
-            </li>
-          </ul>
+  <div>
+    <Modal v-if="modalActive" :modalMessage="modalMessage" v-on:close-modal="closeModal"><Instruction /></Modal>
+    <footer>
+      <div class="container">
+        <div class="left">
+          <div class="col-1">
+            <router-link class="header" :to="{ name: 'Home' }">TeachAR</router-link>
+            <ul>
+              <li>
+                <a target="_blank" href="https://cit.ac.in"><college class="svg-icon" /></a>
+              </li>
+              <li>
+                <a target="_blank" href="https://github.com/swaubhik"><codebrand class="svg-icon" /></a>
+              </li>
+              <li>
+                <a target="_blank" href="https://github.com/rickydebojeet"><arcamera class="svg-icon" /></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-2">
+            <ul>
+              <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
+              <router-link class="link" :to="{ name: 'Lessons' }">Lessons</router-link>
+              <router-link v-if="admin" class="link" :to="{ name: 'CreateLessons' }">Create Lessons</router-link>
+              <router-link v-if="!user" class="link" :to="{ name: 'Login' }">Login In / Register</router-link>
+              <div @click="closeModal()" class="link">Instruction</div>
+            </ul>
+          </div>
         </div>
-        <div class="col-2">
-          <ul>
-            <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
-            <router-link class="link" :to="{ name: 'Lessons' }">Lessons</router-link>
-            <router-link v-if="admin" class="link" :to="{ name: 'CreateLessons' }">Create Lessons</router-link>
-            <router-link v-if="!user" class="link" :to="{ name: 'Login' }">Login In / Register</router-link>
-          </ul>
+        <div class="right">
+          <p>&copy; 2022 All Rights Reserved</p>
         </div>
       </div>
-      <div class="right">
-        <p>&copy; 2022 All Rights Reserved</p>
-      </div>
-    </div>
-  </footer>
+    </footer>
+  </div>
 </template>
 
 <script>
 import college from "../assets/Icons/college.svg";
 import codebrand from "../assets/Icons/code-brand.svg";
 import arcamera from "../assets/Icons/ar-camera.svg";
+import Modal from "./Modal.vue";
+import Instruction from "./Instruction.vue";
 export default {
   name: "footer-vue",
   components: {
     college,
     codebrand,
     arcamera,
+    Modal,
+    Instruction,
+  },
+  data() {
+    return {
+      modalActive: false,
+      modalMessage: "Instruction to use TeachAR",
+    };
   },
   computed: {
     user() {
@@ -49,6 +64,11 @@ export default {
     },
     admin() {
       return this.$store.state.profileAdmin;
+    },
+  },
+  methods: {
+    closeModal() {
+      this.modalActive = !this.modalActive;
     },
   },
 };
