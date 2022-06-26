@@ -30,7 +30,7 @@
           </div>
         </div>
         <div class="right">
-          <p>&copy; 2022 All Rights Reserved</p>
+          <p>&copy; {{ new Date().getFullYear() }} All Rights Reserved</p>
         </div>
       </div>
     </footer>
